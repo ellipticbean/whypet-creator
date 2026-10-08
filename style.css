@@ -1,0 +1,1057 @@
+body {
+    margin: 0;
+    background: #222;
+    font-family: Arial, sans-serif;
+}
+
+#creator {
+    position: relative;
+
+    width: 640px;
+    height: 380px;
+
+    margin: 40px auto;
+
+    user-select: none;
+}
+
+#creator-background {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 640px;
+    height: 380px;
+
+    z-index: 0;
+
+    pointer-events: none;
+}
+
+
+/* ====================================================
+   PET DISPLAY AREA
+   ==================================================== */
+
+#pet-area {
+    position: absolute;
+
+    /*
+        Original Java editor pet region begins
+        at Y = 46.
+    */
+
+    left: 0;
+    top: 46px;
+
+    width: 330px;
+    height: 260px;
+
+    overflow: hidden;
+
+    z-index: 10;
+
+    /*
+        Dragging is handled centrally on #pet-area.
+    */
+
+    touch-action: none;
+}
+
+.pet-part {
+    position: absolute;
+
+    pointer-events: auto;
+}
+
+
+/*
+    Original Ball Body:
+
+    body anchor = 30,58
+    Java scale = 3
+    fixed body attachment point = 160,212
+
+    X:
+    160 - (30 × 3)
+    = 70
+
+    Global Y:
+    212 - (58 × 3)
+    = 38
+
+    pet-area starts at Y = 46
+
+    38 - 46 = -8
+*/
+
+#pet-body {
+    position: absolute;
+
+    left: 70px;
+    top: -8px;
+
+    width: 180px;
+    height: 180px;
+
+    z-index: 1;
+
+    pointer-events: auto;
+}
+
+
+/* ====================================================
+   COLOR PICKER
+   ==================================================== */
+
+#color-picker {
+    position: absolute;
+
+    left: 7px;
+    top: 337px;
+
+    width: 144px;
+    height: 36px;
+
+    z-index: 20;
+
+    cursor: pointer;
+}
+
+
+/*
+    PetToolBox.java drew a white 10 × 10 outline
+    inside whichever 12 × 12 color cell was selected.
+*/
+
+#color-picker::after {
+    content: "";
+
+    position: absolute;
+
+    left:
+        var(
+            --selected-color-x,
+            0px
+        );
+
+    top:
+        var(
+            --selected-color-y,
+            0px
+        );
+
+    width: 9px;
+    height: 9px;
+
+    border: 1px solid white;
+
+    box-sizing: content-box;
+
+    display: none;
+
+    pointer-events: none;
+}
+
+#color-picker.has-selected-color::after {
+    display: block;
+}
+
+
+/* ====================================================
+   CATEGORY MENU
+   ==================================================== */
+
+#category-menu {
+    position: absolute;
+
+    left: 358px;
+    top: 38px;
+
+    width: 268px;
+    height: 59px;
+
+    z-index: 30;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 63px);
+
+    grid-template-rows:
+        repeat(2, 25px);
+
+    column-gap: 3px;
+    row-gap: 3px;
+
+    padding: 3px;
+
+    box-sizing: border-box;
+}
+
+.category-button {
+    background: transparent;
+
+    border: none;
+
+    color: white;
+
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 1;
+}
+
+.category-button:hover {
+    color: yellow;
+}
+
+
+/* ====================================================
+   ORIGINAL SEARCH / CATEGORY LABEL
+   ==================================================== */
+
+#search-label {
+    position: absolute;
+
+    left: 477px;
+    top: 120px;
+
+    width: 144px;
+    height: 17px;
+
+    z-index: 35;
+
+    background: #9999ff;
+    color: #00459c;
+
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+
+    line-height: 17px;
+
+    text-transform: uppercase;
+
+    overflow: hidden;
+    white-space: nowrap;
+
+    pointer-events: none;
+}
+
+
+/* ====================================================
+   PART RESULTS
+   ==================================================== */
+
+#part-results {
+    position: absolute;
+
+    left: 370px;
+    top: 148px;
+
+    width: 255px;
+    height: 140px;
+
+    z-index: 30;
+
+    display: grid;
+
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, 64px);
+    grid-auto-columns: 64px;
+
+    column-gap: 10px;
+    row-gap: 10px;
+
+    align-content: start;
+    justify-content: start;
+
+    overflow: hidden;
+
+    /*
+        This covers the static white squares baked
+        into creator.gif. Each actual result gets its
+        own white tile instead.
+    */
+
+    background: #ccccff;
+
+    scrollbar-width: none;
+}
+
+.part-result {
+    position: relative;
+
+    outline: none;
+
+    width: 64px;
+    height: 64px;
+
+    transform:
+        translateX(
+            var(
+                --part-scroll-offset,
+                0px
+            )
+        );
+
+    background: white;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    flex-shrink: 0;
+}
+
+.part-result img {
+    display: block;
+
+    width: 64px;
+    height: 64px;
+
+    object-fit: contain;
+
+    image-rendering: auto;
+
+    pointer-events: none;
+}
+
+
+/* Hide Chrome / Edge's native scrollbar. */
+
+#part-results::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* ====================================================
+   ORIGINAL JAVA-STYLE PART SCROLLER
+   ==================================================== */
+
+/*
+    CreatorPanel.SEARCH_SCROLLER_RECT:
+
+        x = 370
+        y = 290
+        w = 240
+        h = 20
+*/
+
+#part-scroll-controls {
+    position: absolute;
+
+    left: 370px;
+    top: 290px;
+
+    width: 240px;
+    height: 20px;
+
+    z-index: 35;
+
+    display: flex;
+    align-items: center;
+
+    gap: 0;
+
+    background: #ccccff;
+
+    box-sizing: border-box;
+}
+
+
+/*
+    Scroller.java uses the full 20 × 20 ends
+    as its low/high arrow regions.
+*/
+
+.part-scroll-button {
+    position: relative;
+
+    width: 20px;
+    height: 20px;
+
+    flex: 0 0 20px;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+
+    background: #ccccff;
+
+    color: transparent;
+
+    font-size: 0;
+
+    cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+
+/*
+    Build the old filled blue triangles with a
+    darker blue outline using two CSS triangles.
+*/
+
+.part-scroll-button::before,
+.part-scroll-button::after {
+    content: "";
+
+    position: absolute;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    width: 0;
+    height: 0;
+
+    pointer-events: none;
+}
+
+
+/* LEFT arrow outline */
+
+#part-scroll-left::before {
+    left: 0;
+
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 15px solid #3333ff;
+}
+
+
+/* LEFT arrow fill */
+
+#part-scroll-left::after {
+    left: 2px;
+
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 12px solid #6666cc;
+}
+
+
+/* RIGHT arrow outline */
+
+#part-scroll-right::before {
+    right: 0;
+
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 15px solid #3333ff;
+}
+
+
+/* RIGHT arrow fill */
+
+#part-scroll-right::after {
+    right: 2px;
+
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 12px solid #6666cc;
+}
+
+
+/*
+    While an arrow (or that direction of the track)
+    is being held, the Java applet filled that arrow
+    yellow.
+*/
+
+#part-scroll-left.scroller-active::after {
+    border-right-color: yellow;
+}
+
+#part-scroll-right.scroller-active::after {
+    border-left-color: yellow;
+}
+
+
+/*
+    Horizontal Scroller.java geometry:
+
+        bar x = 20
+        bar y = 2
+        bar w = 200
+        bar h = 16
+*/
+
+#part-scroll-track {
+    position: relative;
+
+    width: 200px;
+    height: 16px;
+
+    flex: 0 0 200px;
+
+    background: #e2e2e2;
+
+    border: 1px solid #6666ff;
+
+    box-sizing: border-box;
+
+    cursor: default;
+}
+
+
+/*
+    The original thumb is always 16 × 16.
+*/
+
+#part-scroll-thumb {
+    position: absolute;
+
+    left: 0;
+    top: -1px;
+
+    width: 16px;
+    height: 16px;
+
+    min-width: 0;
+
+    background: #ff9900;
+
+    border: 1px solid orange;
+
+    box-sizing: border-box;
+
+    cursor: pointer;
+
+    touch-action: none;
+}
+
+
+/*
+    Scroller.java changes the thumb outline to red
+    while it is being dragged.
+*/
+
+#part-scroll-thumb.scroller-dragging {
+    border-color: red;
+}
+
+
+/* ====================================================
+   EQUIPPED PET PART LAYER
+   ==================================================== */
+
+/*
+    The layer itself must not intercept mouse events.
+
+    Pixel-aware pet hit testing is handled centrally
+    by #pet-area.
+*/
+
+#pet-parts-layer {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 330px;
+    height: 260px;
+
+    z-index: auto;
+
+    pointer-events: none;
+}
+
+#pet-parts-layer .equipped-part {
+    position: absolute;
+
+    pointer-events: auto;
+
+    cursor: grab;
+
+    user-select: none;
+
+    touch-action: none;
+
+    -webkit-user-drag: none;
+}
+
+#pet-parts-layer .equipped-part:active {
+    cursor: grabbing;
+}
+
+
+/* ====================================================
+   JAVA-STYLE PET OUTLINE LAYER
+   ==================================================== */
+
+#pet-outline-layer {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 330px;
+    height: 260px;
+
+    /*
+        PetBox.draw_FG() draws the yellow outline
+        above the normal z-ordered pet artwork.
+        Attachment markers are drawn after it.
+    */
+
+    z-index: 9999;
+
+    pointer-events: none;
+}
+
+
+/* ====================================================
+   ATTACHMENT POINT MARKERS
+   ==================================================== */
+
+#attachment-points-layer {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 330px;
+    height: 260px;
+
+    /*
+        Always display legal attachment markers above
+        the body and equipped pieces.
+    */
+
+    z-index: 10000;
+
+    pointer-events: none;
+}
+
+
+/*
+    Original WhyPet attachment marker:
+
+        4 × 4 yellow square
+        2 × 2 red center
+*/
+
+.attachment-point-marker {
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    background: yellow;
+
+    pointer-events: none;
+
+    box-sizing: border-box;
+}
+
+.attachment-point-marker::after {
+    content: "";
+
+    position: absolute;
+
+    left: 1px;
+    top: 1px;
+
+    width: 2px;
+    height: 2px;
+
+    background: red;
+}
+
+
+/* ====================================================
+   ORIGINAL JAVA MOUSE TIP
+   ==================================================== */
+
+/*
+    MouseTipText.java:
+
+        font: Times, plain, 10
+        interior: lightGray
+        border: black
+
+    Its preferred size was roughly text width + 6px
+    and font height + 10px.
+*/
+
+#mouse-tip {
+    position: absolute;
+
+    z-index: 20000;
+
+    display: none;
+
+    background: lightgray;
+
+    border: 1px solid black;
+
+    padding: 4px 2px;
+
+    color: black;
+
+    font-family:
+        "Times New Roman",
+        Times,
+        serif;
+
+    font-size: 10px;
+    font-weight: normal;
+
+    line-height: 12px;
+
+    white-space: pre;
+
+    pointer-events: none;
+
+    box-sizing: border-box;
+}
+
+#mouse-tip.active {
+    display: block;
+}
+
+
+/* ====================================================
+   ORIGINAL CREATOR TOOL BUTTONS
+   ==================================================== */
+
+.creator-tool-button {
+    position: absolute;
+
+    background: transparent;
+    border: none;
+
+    padding: 0;
+    margin: 0;
+
+    cursor: pointer;
+
+    z-index: 40;
+
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 1;
+
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+
+/* MOVE FORWARD */
+
+#move-forward-button {
+    left: 171px;
+    top: 321px;
+
+    width: 96px;
+    height: 15px;
+
+    font-size: 10px;
+    font-weight: normal;
+
+    color: #066900;
+}
+
+
+/* MOVE BACKWARD */
+
+#move-backward-button {
+    left: 171px;
+    top: 341px;
+
+    width: 96px;
+    height: 15px;
+
+    font-size: 10px;
+    font-weight: normal;
+
+    color: #066900;
+}
+
+
+/* CLEAR */
+
+#clear-pet-button {
+    left: 170px;
+    top: 360px;
+
+    width: 43px;
+    height: 16px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    color: #5e5ea7;
+}
+
+
+/* BUY ME */
+
+#buy-pet-button {
+    left: 280px;
+    top: 336px;
+
+    width: 46px;
+    height: 22px;
+
+    font-size: 12px;
+    font-weight: bold;
+
+    color: #ff3300;
+
+    white-space: nowrap;
+}
+
+
+/* ====================================================
+   SEARCH PARTS
+   ==================================================== */
+
+#search-parts-input {
+    position: absolute;
+
+    /*
+        CreatorPanel.SEARCH_TEXT_RECT
+        = 471,341,145,20
+    */
+
+    left: 471px;
+    top: 341px;
+
+    width: 145px;
+    height: 20px;
+
+    box-sizing: border-box;
+
+    z-index: 40;
+
+    border: 1px solid #999999;
+
+    background: white;
+
+    padding: 1px 3px;
+
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+
+    color: black;
+
+    outline: none;
+}
+
+#search-parts-input:focus {
+    border-color: #666666;
+}
+
+/* ====================================================
+   PUBLIC RELEASE PAGE
+   ==================================================== */
+
+/*
+    Everything below is OUTSIDE the 640 × 380 creator.
+    None of these styles change the recovered creator geometry.
+*/
+
+body {
+    min-height: 100vh;
+    color: #f3f3f3;
+}
+
+#public-page {
+    width: min(760px, calc(100% - 24px));
+    margin: 0 auto;
+    padding: 28px 0 48px;
+}
+
+.release-header,
+.release-notice,
+.release-tools,
+.release-howto,
+.release-footer {
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.release-header {
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.release-eyebrow {
+    margin: 0 0 6px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.12em;
+    color: #c7c7ff;
+}
+
+.release-header h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.2;
+}
+
+.release-intro {
+    max-width: 640px;
+    margin: 10px auto 0;
+    color: #d7d7d7;
+    line-height: 1.45;
+}
+
+.release-notice,
+.release-tools,
+.release-howto {
+    margin: 0 auto 18px;
+    padding: 16px 18px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #2b2b2b;
+}
+
+.release-notice h2,
+.release-tools h2,
+.release-howto h2 {
+    margin: 0 0 8px;
+    font-size: 17px;
+}
+
+.release-notice p,
+.release-tools p,
+.release-howto p,
+.release-howto li {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.release-notice p,
+.release-tools p,
+.release-howto p {
+    margin: 8px 0;
+}
+
+.privacy-note {
+    color: #d9ffd9;
+}
+
+.release-link-button,
+.release-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 36px;
+
+    padding: 8px 12px;
+
+    border: 1px solid #7777dd;
+    border-radius: 5px;
+
+    background: #5e5ebd;
+    color: white;
+
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.release-link-button:hover,
+.release-action-button:hover {
+    background: #7070d0;
+}
+
+.release-link-button:focus-visible,
+.release-action-button:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+.release-tool-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.release-status {
+    min-height: 21px;
+    margin-bottom: 0 !important;
+    color: #ffff99;
+}
+
+.release-howto ol {
+    margin: 10px 0 0;
+    padding-left: 24px;
+}
+
+.release-howto li + li {
+    margin-top: 4px;
+}
+
+.release-footer {
+    margin-top: 24px;
+    padding-top: 14px;
+    border-top: 1px solid #444;
+    color: #aaa;
+    text-align: center;
+}
+
+.release-footer p {
+    margin: 5px 0;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+
+/*
+    The creator itself remains exactly 640 × 380.
+
+    On a narrow phone screen we scale the whole creator visually
+    without changing its internal coordinate system.
+*/
+
+@media (max-width: 680px) {
+
+    #creator {
+        transform-origin: top left;
+
+        /*
+            640px creator scaled to the available viewport.
+            The wrapper height correction is handled by public.js.
+        */
+
+        transform:
+            scale(
+                var(
+                    --creator-mobile-scale,
+                    1
+                )
+            );
+
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

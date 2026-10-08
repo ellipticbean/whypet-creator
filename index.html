@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Unofficial WhyPet Creator Recreation</title>
+
+    <meta
+        name="description"
+        content="A fan-made recreation of Whyville's classic WhyPet Creator."
+    >
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+    <main id="public-page">
+
+        <header class="release-header">
+
+            <p class="release-eyebrow">
+                UNOFFICIAL FAN RECREATION
+            </p>
+
+            <h1>
+                WhyPet Creator
+            </h1>
+
+            <p class="release-intro">
+                A recreation of Whyville's old Java WhyPet Creator.
+                Build a pet here, then hand the finished design to
+                Whyville's official Buy Pets page.
+            </p>
+
+        </header>
+
+
+        <section class="release-notice" aria-labelledby="before-you-start">
+
+            <h2 id="before-you-start">
+                Before you start
+            </h2>
+
+            <p>
+                Log into Whyville in this same browser first. When you
+                press <strong>BUY ME</strong>, this creator sends only
+                the finished pet description to Whyville's official
+                purchase page. Whyville handles your account, pet name,
+                Pearls, and final purchase.
+            </p>
+
+            <p class="privacy-note">
+                This recreation does <strong>not</strong> ask for or
+                collect your Whyville username, password, or session.
+            </p>
+
+            <a
+                class="release-link-button"
+                href="https://www.whyville.net/"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                OPEN WHYVILLE
+            </a>
+
+        </section>
+
+
+        <!-- ==================================================
+             PROVEN WHY PET CREATOR BUILD
+             ================================================== -->
+
+<div id="creator">
+
+        <!-- Original WhyPet Creator background -->
+
+        <img
+            id="creator-background"
+            src="creator.gif"
+            alt="WhyPet Creator"
+            draggable="false"
+        >
+
+
+        <!-- ==========================================
+             PET DISPLAY AREA
+             ========================================== -->
+
+        <div id="pet-area">
+
+            <canvas
+                id="pet-body"
+                class="pet-part"
+                width="180"
+                height="180"
+            ></canvas>
+
+
+            <!-- Equipped eyes, mouths, ears, arms, etc. -->
+
+            <div id="pet-parts-layer"></div>
+
+
+            <!--
+                Exact Java-style 2px yellow outline for the
+                selected pet piece (or hover piece when nothing
+                is selected).
+            -->
+
+            <canvas
+                id="pet-outline-layer"
+                width="330"
+                height="260"
+                aria-hidden="true"
+            ></canvas>
+
+
+            <!-- Original-style legal attachment markers -->
+
+            <div id="attachment-points-layer"></div>
+
+        </div>
+
+
+        <!-- ==========================================
+             COLOR PICKER
+             ========================================== -->
+
+        <div id="color-picker"></div>
+
+
+        <!-- ==========================================
+             CATEGORY BUTTONS
+             ========================================== -->
+
+        <div id="category-menu"></div>
+
+
+        <!--
+            Dynamic text displayed after the baked-in
+            "SELECT A PART:" label.
+        -->
+
+        <div id="search-label"></div>
+
+
+        <!-- ==========================================
+             SELECT A PART RESULTS
+             ========================================== -->
+
+        <div id="part-results"></div>
+
+
+        <!-- ==========================================
+             PART RESULTS SCROLLER
+             ========================================== -->
+
+        <div id="part-scroll-controls">
+
+            <button
+                id="part-scroll-left"
+                class="part-scroll-button"
+                type="button"
+                aria-label="Scroll parts left"
+            >
+                ◀
+            </button>
+
+
+            <div id="part-scroll-track">
+
+                <div id="part-scroll-thumb"></div>
+
+            </div>
+
+
+            <button
+                id="part-scroll-right"
+                class="part-scroll-button"
+                type="button"
+                aria-label="Scroll parts right"
+            >
+                ▶
+            </button>
+
+        </div>
+
+
+        <!-- ==========================================
+             SEARCH PARTS
+             ========================================== -->
+
+        <input
+            id="search-parts-input"
+            type="text"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search Parts"
+        >
+
+
+        <!-- ==========================================
+             ORIGINAL WHYVILLE PET CONTROLS
+             ========================================== -->
+
+        <button
+            id="move-forward-button"
+            class="creator-tool-button"
+            type="button"
+        >
+            MOVE FORWARD
+        </button>
+
+
+        <button
+            id="move-backward-button"
+            class="creator-tool-button"
+            type="button"
+        >
+            MOVE BACKWARD
+        </button>
+
+
+        <button
+            id="clear-pet-button"
+            class="creator-tool-button"
+            type="button"
+        >
+            CLEAR
+        </button>
+
+
+        <button
+            id="buy-pet-button"
+            class="creator-tool-button"
+            type="button"
+        >
+            BUY ME
+        </button>
+
+
+        <!-- Original Java MouseTipText overlay -->
+
+        <div
+            id="mouse-tip"
+            aria-hidden="true"
+        ></div>
+
+    </div>
+
+
+        <!-- ==================================================
+             PUBLIC RELEASE UTILITIES
+             ================================================== -->
+
+        <section class="release-tools" aria-labelledby="share-your-pet">
+
+            <h2 id="share-your-pet">
+                Share or transfer your design
+            </h2>
+
+            <p>
+                These buttons do not change the original creator.
+                They just make the finished pet easier to share.
+            </p>
+
+            <div class="release-tool-buttons">
+
+                <button
+                    id="copy-share-link"
+                    class="release-action-button"
+                    type="button"
+                >
+                    COPY PET SHARE LINK
+                </button>
+
+                <button
+                    id="copy-buy-link"
+                    class="release-action-button"
+                    type="button"
+                >
+                    COPY WHYVILLE BUY LINK
+                </button>
+
+            </div>
+
+            <p
+                id="release-status"
+                class="release-status"
+                role="status"
+                aria-live="polite"
+            ></p>
+
+        </section>
+
+
+        <section class="release-howto" aria-labelledby="how-to-use">
+
+            <h2 id="how-to-use">
+                How to use it
+            </h2>
+
+            <ol>
+                <li>
+                    Sign into your real Whyville account in this browser.
+                </li>
+                <li>
+                    Build your WhyPet above.
+                </li>
+                <li>
+                    Press <strong>BUY ME</strong>.
+                </li>
+                <li>
+                    On Whyville's official page, name the pet and confirm
+                    the purchase.
+                </li>
+            </ol>
+
+            <p>
+                You can also use <strong>COPY PET SHARE LINK</strong>
+                to send somebody a link that reconstructs the same pet
+                in this creator.
+            </p>
+
+        </section>
+
+
+        <footer class="release-footer">
+
+            <p>
+                This is an unofficial fan-made preservation/recreation
+                project and is not an official Whyville service.
+            </p>
+
+            <p>
+                Whyville names, artwork, and original assets belong to
+                their respective rights holders.
+            </p>
+
+        </footer>
+
+    </main>
+
+
+    <!--
+        Keep creator.js before public.js.
+
+        public.js uses the already-tested pet description functions,
+        but does not modify the original creator mechanics.
+    -->
+
+    <script src="creator.js"></script>
+    <script src="public.js"></script>
+
+</body>
+
+</html>
